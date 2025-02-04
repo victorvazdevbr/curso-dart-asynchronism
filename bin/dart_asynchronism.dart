@@ -1,47 +1,48 @@
+import 'dart:async';
+
 import 'package:dart_asynchronism/api_key.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
+StreamController<String> streamController = StreamController<String>();
+
 void main() {
-  // print('Hello, World!');
-  // requestDataAsync();
+  StreamSubscription streamSubscription = streamController.stream.listen(
+    (String info) {
+      print(info);
+    },
+  );
+
+  requestDataAsync();
   sendDataAsync({
-    'id': 'NEW001',
-    'name': 'flutter',
-    'lastName': 'Dart',
-    'balance': 5000,
+    'id': 'NEW002',
+    'name': 'flutter2',
+    'lastName': 'Dart2',
+    'balance': 7000,
   });
 }
 
 void requestData() {
   String url =
-      'https://gist.githubusercontent.com/victorvazlabs/6d77af408b596ad4eab5da983949fc02/raw/f587f8cadfadea10030bebbdc19fd4ca6bc2cce0/accounts.json';
+      'https://gist.githubusercontent.com/victorvazdevbr/6d77af408b596ad4eab5da983949fc02/raw/f587f8cadfadea10030bebbdc19fd4ca6bc2cce0/accounts.json';
 
   Future<http.Response> futureResponse = http.get(Uri.parse(url));
 
-  print(futureResponse);
   futureResponse.then(
     (http.Response response) {
-      print(response.statusCode);
-      print(response.body);
-
-      List<dynamic> listAccounts = convert.json.decode(response.body);
-
-      Map<String, dynamic> mapCarla = listAccounts.firstWhere(
-        (element) => element["name"] == "Carla",
-      );
-      print(mapCarla["balance"]);
+      streamController
+          .add("${DateTime.now()} | Requisição de leitura (usando then).");
     },
   );
-
-  print('Última coisa a acontecer na função.');
 }
 
 Future<List<dynamic>> requestDataAsync() async {
   String url =
-      'https://gist.githubusercontent.com/victorvazlabs/6d77af408b596ad4eab5da983949fc02/raw/f587f8cadfadea10030bebbdc19fd4ca6bc2cce0/accounts.json';
+      'https://gist.githubusercontent.com/victorvazdevbr/6d77af408b596ad4eab5da983949fc02/raw/f587f8cadfadea10030bebbdc19fd4ca6bc2cce0/accounts.json';
 
   final http.Response response = await http.get(Uri.parse(url));
+
+  streamController.add("${DateTime.now()} | Requisição de leitura.");
 
   return convert.jsonDecode(response.body);
 }
@@ -67,5 +68,12 @@ Future<void> sendDataAsync(Map<String, dynamic> mapAccount) async {
       }
     }),
   );
-  print(response.statusCode);
+
+  if (response.statusCode.toString()[0] == "2") {
+    streamController.add(
+        "${DateTime.now()} | Requisição de adição bem sucedida (${mapAccount["name"]}).");
+  } else {
+    streamController
+        .add("${DateTime.now()} | Requisição falhou (${mapAccount["name"]}).");
+  }
 }
