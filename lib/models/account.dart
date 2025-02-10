@@ -32,7 +32,7 @@ class Account {
 
   @override
   String toString() {
-    return '\\nConta $id\\n$name $lastName\\nSaldo: $balance\\n';
+    return '\nID: $id\n$name $lastName\nSaldo: $balance\n';
   }
 
   @override
