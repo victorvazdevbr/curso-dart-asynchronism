@@ -13,7 +13,7 @@ class AccountScreen {
     });
   }
 
-  void runChatBot() async {
+  Future<void> runChatBot() async {
     print('Bom dia! Eu sou Lewis, assistente do Banco d\'Ouro!');
     print('Que bom te ter aqui com a gente.\n');
 
@@ -47,8 +47,13 @@ class AccountScreen {
   }
 
   Future<void> _getAllAccounts() async {
-    List<Account> listAccounts = await _accountService.getAll();
-    print(listAccounts);
+    try {
+      List<Account> listAccounts = await _accountService.getAll();
+      print(listAccounts);
+    } on Exception {
+      print('Não consegui recuperar os dados da conta.');
+      print('Tente novamente mais tarde.');
+    }
   }
 
   Future<void> _addAccount() async {
@@ -93,12 +98,5 @@ class AccountScreen {
         id: uuid.v1(), name: name, lastName: lastName, balance: balance);
 
     await _accountService.addAccount(newAccount);
-  }
-
-  Future<void> _addExampleAccount() async {
-    Account example =
-        Account(id: 'ID555', name: 'John', lastName: 'Davisson', balance: 8800);
-
-    await _accountService.addAccount(example);
   }
 }

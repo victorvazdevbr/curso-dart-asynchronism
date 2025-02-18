@@ -8,12 +8,13 @@ import 'package:http/http.dart' as http;
 class AccountService {
   final StreamController<String> _streamController = StreamController<String>();
   Stream<String> get streamInfos => _streamController.stream;
+
   String url = 'https://api.github.com/gists/6d77af408b596ad4eab5da983949fc02';
 
   Future<List<Account>> getAll() async {
     final http.Response response = await http.get(Uri.parse(url));
 
-    _streamController.add("${DateTime.now()} | Requisição de leitura.");
+    _streamController.add('${DateTime.now()} | Requisição de leitura.');
 
     Map<String, dynamic> mapResponse = convert.jsonDecode(response.body);
     List<dynamic> listDynamic =
@@ -41,7 +42,7 @@ class AccountService {
 
     String content = convert.jsonEncode(listContent);
 
-    http.Response response = await http.post(
+    final http.Response response = await http.post(
       Uri.parse(url),
       headers: {'Authorization': 'Bearer $githubApiKey'},
       body: convert.jsonEncode({
@@ -57,10 +58,10 @@ class AccountService {
 
     if (response.statusCode.toString()[0] == "2") {
       _streamController.add(
-          "${DateTime.now()} | Requisição de adição bem sucedida (${account.name}).");
+          '${DateTime.now()} | Requisição de adição bem sucedida (${account.name}).');
     } else {
       _streamController
-          .add("${DateTime.now()} | Requisição falhou (${account.name}).");
+          .add('${DateTime.now()} | Requisição falhou (${account.name}).');
     }
   }
 }
