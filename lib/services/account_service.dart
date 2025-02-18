@@ -64,4 +64,95 @@ class AccountService {
           .add('${DateTime.now()} | Requisição falhou (${account.name}).');
     }
   }
+
+  Future<Account> getAccountById(String id) async {
+    List<Account> listAccounts = await getAll();
+    List<Map<String, dynamic>> listMapAccounts =
+        listAccounts.map((account) => account.toMap()).toList();
+
+    Map<String, dynamic> accountMap = listMapAccounts.firstWhere(
+        (element) => element['id'] == id,
+        orElse: () =>
+            throw Exception('Conta com o id $id não foi encontrada.'));
+
+    return Account.fromMap(accountMap);
+  }
+
+  Future<void> updateAccount(Account account) async {
+    List<Account> listAccounts = await getAll();
+
+    int index = listAccounts.indexWhere((a) => a.id == account.id);
+
+    if (index == -1) {
+      throw Exception('Conta com ID ${account.id} não encontrada.');
+    }
+
+    listAccounts[index] = account;
+
+    List<Map<String, dynamic>> listMapAccounts =
+        listAccounts.map((account) => account.toMap()).toList();
+
+    String content = convert.jsonEncode(listMapAccounts);
+
+    http.Response response = await http.patch(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $githubApiKey'},
+      body: convert.jsonEncode({
+        'description': 'accounts.json',
+        'public': true,
+        'files': {
+          'accounts.json': {
+            'content': content,
+          }
+        }
+      }),
+    );
+
+    if (response.statusCode.toString()[0] == "2") {
+      _streamController.add(
+          "${DateTime.now()} | Requisição de atualização bem sucedida (${account.name}).");
+    } else {
+      _streamController.add(
+          "${DateTime.now()} | Requisição de atualização falhou (${account.name}).");
+    }
+  }
+
+  Future<void> deleteAccount(Account account) async {
+    List<Account> listAccounts = await getAll();
+
+    int index = listAccounts.indexWhere((a) => a.id == account.id);
+
+    if (index == -1) {
+      throw Exception('Conta com ID ${account.id} não encontrada.');
+    }
+
+    listAccounts.remove(account);
+
+    List<Map<String, dynamic>> listMapAccounts =
+        listAccounts.map((account) => account.toMap()).toList();
+
+    String content = convert.jsonEncode(listMapAccounts);
+
+    http.Response response = await http.patch(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $githubApiKey'},
+      body: convert.jsonEncode({
+        'description': 'accounts.json',
+        'public': true,
+        'files': {
+          'accounts.json': {
+            'content': content,
+          }
+        }
+      }),
+    );
+
+    if (response.statusCode.toString()[0] == "2") {
+      _streamController.add(
+          "${DateTime.now()} | Requisição de remoção bem sucedida (${account.name}).");
+    } else {
+      _streamController.add(
+          "${DateTime.now()} | Requisição de remoção falhou (${account.name}).");
+    }
+  }
 }
