@@ -107,4 +107,6 @@ class AccountScreen {
 
     await _accountService.addAccount(newAccount);
   }
+
+  // Teste
 }
