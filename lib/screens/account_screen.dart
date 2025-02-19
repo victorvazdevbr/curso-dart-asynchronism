@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dart_asynchronism/models/account.dart';
 import 'package:dart_asynchronism/services/account_service.dart';
-import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
 class AccountScreen {
@@ -39,6 +38,9 @@ class AccountScreen {
             isRunning = false;
             print('Te vejo na próxima.');
             break;
+          case 'dev':
+            _accountService.getAllDio();
+            break;
           default:
             print('Não entendi. Tente novamente.');
             break;
@@ -49,16 +51,12 @@ class AccountScreen {
 
   Future<void> _getAllAccounts() async {
     try {
-      List<Account> listAccounts = await _accountService.getAll();
+      List<Account> listAccounts = await _accountService.getAllDio();
       print(listAccounts);
-    } on ClientException catch (clientException) {
-      print('Não foi possível alcançar o servidor.');
-      print('Tente novamente mais tarde.');
-      print(clientException.message);
-      print(clientException.uri);
-    } on Exception {
+    } on Exception catch (clientException) {
       print('Não consegui recuperar os dados da conta.');
       print('Tente novamente mais tarde.');
+      print(clientException.toString());
     } finally {
       print('${DateTime.now()} | Ocorreu uma tentativa de consulta.');
     }
@@ -105,8 +103,6 @@ class AccountScreen {
     Account newAccount = Account(
         id: uuid.v1(), name: name, lastName: lastName, balance: balance);
 
-    await _accountService.addAccount(newAccount);
+    await _accountService.addAccountDio(newAccount);
   }
-
-  // Teste
 }
