@@ -56,6 +56,9 @@ class AccountScreen {
       print('Tente novamente mais tarde.');
       print(clientException.message);
       print(clientException.uri);
+    } on FormatException catch (e) {
+      print('O formato de dados não é válido.');
+      print(e.message);
     } on Exception {
       print('Não consegui recuperar os dados da conta.');
       print('Tente novamente mais tarde.');
@@ -105,8 +108,10 @@ class AccountScreen {
     Account newAccount = Account(
         id: uuid.v1(), name: name, lastName: lastName, balance: balance);
 
-    await _accountService.addAccount(newAccount);
+    try {
+      await _accountService.addAccount(newAccount);
+    } on Exception {
+      print('Ocorreu um problema ao tentar adicionar.');
+    }
   }
-
-  // Teste
 }
