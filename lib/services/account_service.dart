@@ -9,8 +9,7 @@ class AccountService {
   final StreamController<String> _streamController = StreamController<String>();
   Stream<String> get streamInfos => _streamController.stream;
 
-  String url =
-      'https://api.github.com.br/gists/6d77af408b596ad4eab5da983949fc02';
+  String url = 'https://api.github.com/gists/6d77af408b596ad4eab5da983949fc02';
 
   Future<List<Account>> getAll() async {
     final http.Response response = await http.get(Uri.parse(url));
@@ -36,6 +35,19 @@ class AccountService {
     List<Account> listAccounts = await getAll();
     listAccounts.add(account);
 
+    int statusCode = await save(listAccounts, accountName: account.name);
+
+    if (statusCode.toString()[0] == "2") {
+      _streamController.add(
+          '${DateTime.now()} | Requisição de adição bem sucedida (${account.name}).');
+    } else {
+      _streamController
+          .add('${DateTime.now()} | Requisição falhou (${account.name}).');
+    }
+  }
+
+  Future<int> save(List<Account> listAccounts,
+      {String accountName = ''}) async {
     List<Map<String, dynamic>> listContent = [];
     for (Account account in listAccounts) {
       listContent.add(account.toMap());
@@ -57,13 +69,7 @@ class AccountService {
       }),
     );
 
-    if (response.statusCode.toString()[0] == "2") {
-      _streamController.add(
-          '${DateTime.now()} | Requisição de adição bem sucedida (${account.name}).');
-    } else {
-      _streamController
-          .add('${DateTime.now()} | Requisição falhou (${account.name}).');
-    }
+    return response.statusCode;
   }
 
   Future<Account> getAccountById(String id) async {

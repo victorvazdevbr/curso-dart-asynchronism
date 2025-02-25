@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dart_asynchronism/models/account.dart';
 import 'package:dart_asynchronism/services/account_service.dart';
+import 'package:dart_asynchronism/services/transaction_service.dart';
 import 'package:http/http.dart';
 import 'package:uuid/uuid.dart';
 
@@ -39,6 +40,13 @@ class AccountScreen {
             isRunning = false;
             print('Te vejo na próxima.');
             break;
+          case 'dev':
+            TransactionService().makeTransaction(
+              idSender: "ID001",
+              idReceiver: "ID003",
+              amount: 50,
+            );
+            break;
           default:
             print('Não entendi. Tente novamente.');
             break;
@@ -68,7 +76,7 @@ class AccountScreen {
   }
 
   Future<void> _addAccount() async {
-    String name = '', lastName = '';
+    String name = '', lastName = '', accountType = 'Brigadeiro';
     double balance = 0;
 
     String? input;
@@ -106,7 +114,11 @@ class AccountScreen {
     }
 
     Account newAccount = Account(
-        id: uuid.v1(), name: name, lastName: lastName, balance: balance);
+        id: uuid.v1(),
+        name: name,
+        lastName: lastName,
+        balance: balance,
+        accountType: accountType);
 
     try {
       await _accountService.addAccount(newAccount);
