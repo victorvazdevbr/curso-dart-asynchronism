@@ -112,8 +112,7 @@ class TransactionService {
   }
 
   Future<void> addTransaction(Transaction transaction) async {
-    // List<Transaction> listTransactions = await getAll();
-    List<Transaction> listTransactions = [];
+    List<Transaction> listTransactions = await getAll();
     listTransactions.add(transaction);
 
     int statusCode =

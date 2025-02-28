@@ -64,7 +64,7 @@ class Transaction {
 
   @override
   String toString() =>
-      'ID: $id\nSender ID: $senderAccountId\nReceiver ID: $receiverAccountId\nDate: $date\nAmount: $amount\nTaxes: $taxes';
+      '\nID: $id\nSender ID: $senderAccountId\nReceiver ID: $receiverAccountId\nDate: $date\nAmount: $amount\nTaxes: $taxes\n';
 
   @override
   bool operator ==(covariant Transaction other) {
