@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:dart_asynchronism/api_key.dart';
+import 'package:dart_asynchronism/exceptions/transaction_exceptions.dart';
 import 'package:dart_asynchronism/helpers/helper_taxes.dart';
 import 'package:dart_asynchronism/models/account.dart';
 import 'package:dart_asynchronism/models/transaction.dart';
@@ -28,19 +29,20 @@ class TransactionService {
       (acc) => acc.id == idReceiver,
     );
 
-    if (senderAccount == null) {
-      print('Erro: Conta remetente não encontrada.');
-      return;
-    }
-    if (receiverAccount == null) {
-      print('Erro: Conta destinatário não encontrada.');
-      return;
-    }
+    if (senderAccount == null) throw SenderNotExistsException();
+
+    if (receiverAccount == null) throw ReceiverNotExistsException();
 
     double taxes = calculateTaxesByAccount(senderAccount, amount);
     double taxedAmount = amount + taxes;
 
-    if (senderAccount.getBalance() < taxedAmount) return;
+    if (senderAccount.getBalance() < taxedAmount) {
+      throw InsufficientBalanceException(
+        cause: senderAccount,
+        amount: amount,
+        taxes: taxes,
+      );
+    }
 
     senderAccount.sendTransaction(taxedAmount);
     receiverAccount.receiveTransaction(amount);

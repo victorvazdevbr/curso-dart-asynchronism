@@ -44,7 +44,7 @@ class AccountScreen {
             TransactionService().makeTransaction(
               idSender: "ID001",
               idReceiver: "ID003",
-              amount: 50,
+              amount: 50000,
             );
             break;
           default:
